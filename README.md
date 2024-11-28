@@ -1,4 +1,4 @@
-# React + TypeScript + Vite
+# Web-eight-way
 
 This is a project that experiments with React, TypeScript, Three JS Fiber.
 
@@ -22,3 +22,5 @@ I want to keep adding features to this project, like rollercoasters, flatrides, 
 But I am pretty limited in terms of technical knowlegde in this area, so I will keep learning and adding features as I learn more about Three JS Fiber and React.
 So, if you want to contribute, feel free to do so!
 
+### The name?
+Well, in dutch a rollercoaster is 'achtbaan', translated literaly is eight way... silly 🤡
