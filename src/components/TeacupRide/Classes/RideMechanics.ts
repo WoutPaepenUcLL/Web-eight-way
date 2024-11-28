@@ -32,6 +32,14 @@ class RideMechanics {
             restraintsOpen: false,
             gatesOpen: false
         };
+        // Bind methods to the correct `this` context
+        this.canDispatch = this.canDispatch.bind(this);
+        this.openGates = this.openGates.bind(this);
+        this.closeGates = this.closeGates.bind(this);
+        this.openRestraints = this.openRestraints.bind(this);
+        this.closeRestraints = this.closeRestraints.bind(this);
+        this.startRide = this.startRide.bind(this);
+        this.stopRide = this.stopRide.bind(this);
     }
     canDispatch(): boolean {
         if (this.state.gatesOpen  || this.state.restraintsOpen) {
@@ -41,24 +49,42 @@ class RideMechanics {
         }
 
     }
+
+    //status gates
+
+    getGatesStatus() {
+        return this.state.gatesOpen;
+    }
+
+
+    //status restraints
+
+    getRestraintsStatus() {
+        return this.state.restraintsOpen;
+    }
+
     // Open the ride gates
     openGates() {
         this.state.gatesOpen = true;
+        console.log("Gates Opened");
     }
 
     // Close the ride gates
     closeGates() {
         this.state.gatesOpen = false;
+        console.log("Gates Closed");
     }
 
     // Open the restraints
     openRestraints() {
         this.state.restraintsOpen = true;
+        console.log("Restraints Opened");
     }
 
     // Close the restraints
     closeRestraints() {
         this.state.restraintsOpen = false;
+        console.log("Restraints Closed");
     }
 
     // Start the ride

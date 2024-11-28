@@ -5,13 +5,32 @@ import RideMechanics from "./Classes/RideMechanics.ts";
 import ConfigurableCupCluster from "./ConfigurableCupCluster.tsx";
 import {Html} from "@react-three/drei";
 import TeacupControlUnit from "./Teacup.ControlUnit.tsx";
+import useRideStore from "./RideStore.ts";
 
 function TeaCupRide() {
-    const rideMechanics = new RideMechanics();
+    const [rideMechanics, setRideMechanics] = useState(new RideMechanics());
     const mainPlatformRef = useRef();
     const subPlatformRefs = useRef([]);
 
-    const [isRideActive, setIsRideActive] = useState(false);
+    const [isRideActive, setIsRideActive] = useState(rideMechanics.getState().isActive);
+    const [gatesOpen, setGatesOpen] = useState(rideMechanics.getGatesStatus());
+    const [restraintsOpen, setRestraintsOpen] = useState(rideMechanics.getRestraintsStatus());
+
+
+    const {
+        isActive,
+        intensity,
+        startRide,
+        stopRide,
+        openGates,
+        closeGates,
+        openRestraints,
+        closeRestraints,
+        gatesOpen,
+        restraintsOpen,
+
+    } = useRideStore(); // Get state and actions from Zustand
+
 
     // Prepare sub-platform positions
     const subPlatformPositions = rideMechanics.calculateSubPlatformPositions();
@@ -35,7 +54,7 @@ function TeaCupRide() {
     }
 
     useFrame((_state, delta) => {
-        if (rideMechanics.getState().isActive){
+        if (rideMechanics.getState().isActive) {
             setIsRideActive(true);
             handleRide(delta);
         }else{
@@ -44,10 +63,40 @@ function TeaCupRide() {
 
     });
 
+    const startRide = () => {
+        rideMechanics.startRide();
+
+    }
+    const stopRide = () => {
+        rideMechanics.stopRide();
+    }
+
+    const openGates = () => {
+        rideMechanics.openGates();
+        setGatesOpen(true);
+    }
+
+    const closeGates = () => {
+        rideMechanics.closeGates();
+        setGatesOpen(false);
+    }
+
+    const openRestraints = () => {
+        rideMechanics.openRestraints();
+        setRestraintsOpen(true);
+    }
+
+    const closeRestraints = () => {
+        rideMechanics.closeRestraints();
+        setRestraintsOpen(false);
+    }
+
+
+
     return (
         <>
             <Html>
-                <TeacupControlUnit startRide={rideMechanics.startRide} stopRide={rideMechanics.stopRide} openGates={rideMechanics.openGates} closeGates={rideMechanics.closeGates} openRestraints={rideMechanics.openRestraints} closeRestraints={rideMechanics.closeRestraints} gatesOpen={rideMechanics.getState().gatesOpen} restraintsOpen={rideMechanics.getState().restraintsOpen}/>
+                <TeacupControlUnit startRide={startRide} stopRide={stopRide} openGates={openGates} closeGates={closeGates} openRestraints={openRestraints} closeRestraints={closeRestraints} getGatesStatus={gatesOpen} getRestraintsStatus={restraintsOpen}/>
             </Html>
         <group ref={mainPlatformRef}>
             {/* Base Platform */}
@@ -68,7 +117,7 @@ function TeaCupRide() {
                         <cylinderGeometry args={[rideMechanics.config.subPlatformRadius, rideMechanics.config.subPlatformRadius, 0.5, 32]} />
                         <meshStandardMaterial color="lightblue" />
                     </mesh>
-                     <ConfigurableCupCluster/>
+
                     {/* Cup */}
                     <Teacups
                         config={{

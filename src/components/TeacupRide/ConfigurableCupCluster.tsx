@@ -4,7 +4,7 @@ import CupBody from "./CupBody.tsx";
 
 
 function ConfigurableCupCluster({
-                                    cupCount = 4,
+                                    cupCount = 1,
                                     radius = 3,
                                     startAngle = 0
 }) {
