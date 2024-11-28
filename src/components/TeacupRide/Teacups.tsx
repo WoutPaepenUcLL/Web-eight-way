@@ -16,10 +16,10 @@ const Teacups =(config:any)=> {
     return (
         <group ref={cupRef} position={[0, 1, 0]}>
             <mesh geometry={bodyGeometry}>
-                <meshStandardMaterial color={config?.bodyColor || 'pink'}/>
+                <meshStandardMaterial color={config?.bodyColor || 'brown'}/>
             </mesh>
             <mesh
-                position={[1, 0.5, 0]}
+                position={[2, 0.5, 0]}
                 rotation-z={Math.PI / 4}
                 geometry={handleGeometry}
             >

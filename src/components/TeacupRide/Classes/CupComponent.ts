@@ -14,9 +14,9 @@ class CupComponent {
             bodyColor: 'pink',
             handleColor: 'darkpink',
             size: {
-                width: 3,
+                width: 8,
                 height: 2,
-                depth: 1.5,
+                depth: 6,
                 handleLength: 1
             },
             rotationVariance: 0.02,

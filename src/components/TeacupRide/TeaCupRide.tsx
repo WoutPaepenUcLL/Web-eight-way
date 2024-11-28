@@ -1,6 +1,7 @@
 import {useRef, useState} from 'react';
 import {useFrame} from "@react-three/fiber";
 import Teacups from "./Teacups.tsx";
+import * as THREE from "three";
 import RideMechanics from "./Classes/RideMechanics.ts";
 import ConfigurableCupCluster from "./ConfigurableCupCluster.tsx";
 import {Html} from "@react-three/drei";
@@ -8,17 +9,9 @@ import TeacupControlUnit from "./Teacup.ControlUnit.tsx";
 import useRideStore from "./RideStore.ts";
 
 function TeaCupRide() {
-    const [rideMechanics, setRideMechanics] = useState(new RideMechanics());
-    const mainPlatformRef = useRef();
-    const subPlatformRefs = useRef([]);
-
-    const [isRideActive, setIsRideActive] = useState(rideMechanics.getState().isActive);
-    const [gatesOpen, setGatesOpen] = useState(rideMechanics.getGatesStatus());
-    const [restraintsOpen, setRestraintsOpen] = useState(rideMechanics.getRestraintsStatus());
-
-
     const {
         isActive,
+        runningTime,
         intensity,
         startRide,
         stopRide,
@@ -28,68 +21,64 @@ function TeaCupRide() {
         closeRestraints,
         gatesOpen,
         restraintsOpen,
+        updateMainPlatformRotation,
+        updateSubPlatformRotation,
+        updateIntensity,
+        calculateSubPlatformPositions,
+        rideConfig
+    } = useRideStore();
 
-    } = useRideStore(); // Get state and actions from Zustand
+    const mainPlatformRef = useRef();
+    const subPlatformRefs = useRef([]);
+
+    const subPlatformPositions = calculateSubPlatformPositions();
+
+    const handleRide = (delta: number) =>
+    {
+        /*
+        const mainRotation = useRideStore.getState().mainPlatformRotation + 0.005;
+        useRideStore.getState().updateMainPlatformRotation(mainRotation);
+        mainPlatformRef.current?.setRotationFromEuler(new THREE.Euler(0, mainRotation, 0));
 
 
-    // Prepare sub-platform positions
-    const subPlatformPositions = rideMechanics.calculateSubPlatformPositions();
+        subPlatformRefs.current.forEach((ref, index) => {
+            const subRotation = useRideStore.getState().subPlatformRotations[index] + 0.005 * (index + 1);
+            useRideStore.getState().updateSubPlatformRotation(index, subRotation);
+            ref.current!.rotation.y = subRotation
+        });
+        */
 
-    const handleRide = (delta: number) => {
         // Rotate main platform
         if (mainPlatformRef.current) {
-            mainPlatformRef.current.rotation.y += rideMechanics.config.baseRotationSpeed;
+            mainPlatformRef.current.rotation.y += rideConfig.baseRotationSpeed;
         }
 
         // Rotate sub-platforms with variance
         subPlatformRefs.current.forEach((ref, index) => {
             if (ref) {
-                ref.rotation.y += rideMechanics.config.baseRotationSpeed * (index + 1);
+                ref.rotation.y += rideConfig.baseRotationSpeed * (index + 1);
             }
         });
 
         // Update ride intensity and effects
-        rideMechanics.updateRideIntensity(delta);
-
+        updateIntensity(delta);
+        //Update intensity (if needed -  you might want to move this logic into another function)
+        //useRideStore.setState({ intensity: Math.sin(Date.now() * 0.001) * 0.5 + 0.5 });
     }
 
+
+
     useFrame((_state, delta) => {
-        if (rideMechanics.getState().isActive) {
-            setIsRideActive(true);
+        if (isActive) {
             handleRide(delta);
-        }else{
-            setIsRideActive(false);
+            if (runningTime !== null && Date.now() - runningTime >= 60000) {
+                stopRide();
+                console.log('Ride stopped after 1 minute.');
+            }
         }
 
     });
 
-    const startRide = () => {
-        rideMechanics.startRide();
-
-    }
-    const stopRide = () => {
-        rideMechanics.stopRide();
-    }
-
-    const openGates = () => {
-        rideMechanics.openGates();
-        setGatesOpen(true);
-    }
-
-    const closeGates = () => {
-        rideMechanics.closeGates();
-        setGatesOpen(false);
-    }
-
-    const openRestraints = () => {
-        rideMechanics.openRestraints();
-        setRestraintsOpen(true);
-    }
-
-    const closeRestraints = () => {
-        rideMechanics.closeRestraints();
-        setRestraintsOpen(false);
-    }
 
 
 
@@ -101,7 +90,7 @@ function TeaCupRide() {
         <group ref={mainPlatformRef}>
             {/* Base Platform */}
             <mesh >
-                <cylinderGeometry args={[rideMechanics.config.mainPlatformRadius, rideMechanics.config.mainPlatformRadius, 1, 64]} />
+                <cylinderGeometry args={[rideConfig.mainPlatformRadius,rideConfig.mainPlatformRadius, 1, 64]} />
                 <meshStandardMaterial color="gray" />
             </mesh>
 
@@ -114,7 +103,7 @@ function TeaCupRide() {
                 >
                     {/* Sub-platform */}
                     <mesh >
-                        <cylinderGeometry args={[rideMechanics.config.subPlatformRadius, rideMechanics.config.subPlatformRadius, 0.5, 32]} />
+                        <cylinderGeometry args={[rideConfig.subPlatformRadius, rideConfig.subPlatformRadius, 0.5, 32]} />
                         <meshStandardMaterial color="lightblue" />
                     </mesh>
 
