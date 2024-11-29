@@ -1,10 +1,21 @@
-import {useRef, } from 'react';
+import {useEffect, useRef, useState,} from 'react';
 import {useFrame} from "@react-three/fiber";
 import Teacups from "./Teacups.tsx";
 import * as THREE from "three";
 import {Html} from "@react-three/drei";
 import TeacupControlUnit from "./Teacup.ControlUnit.tsx";
 import useRideStore from "./RideStore.ts";
+import {update} from "@tweenjs/tween.js";
+import {PerspectiveCamera} from "@react-three/drei";
+
+interface PlatformAnimation {
+    name: string;
+    time: number;
+    rotationY: number;
+    rotationX: number;
+    rotationZ: number;
+}
+
 
 function TeaCupRide() {
     const {
@@ -17,10 +28,35 @@ function TeaCupRide() {
         rideConfig
     } = useRideStore();
 
+    //camera states
+    const cameraRef = useRef<PerspectiveCamera>(null!);
+    const cupRef = useRef<THREE.Group>(null!); // Ref to the specific cup you want to attach the camera to
+    const [cameraAttached, setCameraAttached] = useState(false);
+
+
     const mainPlatformRef = useRef<THREE.Group>(null);
     const subPlatformRefs = useRef<(THREE.Group | null)[]>([]);
 
+    const [animationStartTime, setAnimationStartTime] = useState<number | null>(null);
+
+
+    const [mainPlatformAnimation, setMainPlatformAnimation] = useState<PlatformAnimation[]>([]);
+    const [currentAnimation, setCurrentAnimation] = useState<PlatformAnimation | null>(null);
+
+
     const subPlatformPositions = calculateSubPlatformPositions();
+
+    useEffect(() => {
+        // Load main platform animation from JSON
+        fetch('/main_platform_animation.json') // Adjust path as needed
+            .then(response => response.json())
+            .then(animationData => setMainPlatformAnimation(animationData));
+
+        if (cupRef.current && cameraRef.current && !cameraAttached) {
+            cupRef.current.add(cameraRef.current);  // Make camera a child of the cup
+            setCameraAttached(true); // Prevent repeated attachment
+        }
+    }, []);
 
     const handleRide = (delta: number) =>
     {
@@ -36,7 +72,7 @@ function TeaCupRide() {
             ref.current!.rotation.y = subRotation
         });
         */
-
+/*
         // Rotate main platform
         if (mainPlatformRef.current) {
             // @ts-ignore
@@ -47,7 +83,7 @@ function TeaCupRide() {
         subPlatformRefs.current.forEach((ref, index) => {
             if (ref) {
                 // @ts-ignore
-                ref.rotation.y += rideConfig.baseRotationSpeed * (index + 1);
+                ref.rotation.y += rideConfig.baseRotationSpeed;
             }
         });
 
@@ -55,7 +91,75 @@ function TeaCupRide() {
         updateIntensity(delta);
         //Update intensity (if needed -  you might want to move this logic into another function)
         useRideStore.setState({ intensity: Math.sin(Date.now() * intensity) * 0.5 + 0.5 });
+        */
+        if (mainPlatformAnimation.length > 0 && mainPlatformRef.current) {
+            if (animationStartTime === null) {
+                setAnimationStartTime(Date.now());
+            }
+
+            const currentTime = (Date.now() - animationStartTime!) / 1000;
+            // Find the correct animation segment
+
+            let nextAnimationIndex = mainPlatformAnimation.findIndex(anim => anim.time >= currentTime);
+            const currentAnimationIndex = Math.max(0, nextAnimationIndex - 1);
+
+
+
+            if (nextAnimationIndex === -1) {
+                // Reached end of animation loop back or stop
+                nextAnimationIndex = 0; // Loop back to the start if needed
+                setAnimationStartTime(Date.now()) // reset
+            }
+
+            const currentAnim = mainPlatformAnimation[currentAnimationIndex];
+            const nextAnim = mainPlatformAnimation[nextAnimationIndex];
+            if (currentAnimation !== currentAnim) {
+                setCurrentAnimation(currentAnim);
+                console.log(`Switching to animation: ${currentAnim.name}`);
+            }
+            const maxTilt = Math.PI / 4; // Maximum tilt angle in radians
+
+
+            const segmentStartTime = currentAnim.time;
+            const segmentEndTime = nextAnim.time;
+
+            // Calculate easing between current and next frame
+            const alpha = (currentTime - segmentStartTime) / (segmentEndTime - segmentStartTime);
+
+            const targetRotation = new THREE.Euler(
+                nextAnim.rotationX * alpha + currentAnim.rotationX * (1 - alpha), //rotation x
+                nextAnim.rotationY * alpha + currentAnim.rotationY * (1 - alpha), //rotation y
+                nextAnim.rotationZ * alpha + currentAnim.rotationZ * (1 - alpha) //rotation z
+
+            );
+
+            targetRotation.x = Math.min(maxTilt, Math.max(-maxTilt, targetRotation.x)); // Clamp tilt angle
+            targetRotation.z = Math.min(maxTilt, Math.max(-maxTilt, targetRotation.z)); // Clamp tilt angle
+            // Apply rotation to main platform.
+            mainPlatformRef.current.setRotationFromEuler(targetRotation);
+
+
+
+            // Rotate sub-platforms (child of main platform, inheritance handled by Three.js)
+            subPlatformRefs.current.forEach((ref, index) => {
+                if (ref) {
+                    ref.rotation.y += rideConfig.baseRotationSpeed * (index + 1) * delta;
+                }
+            });
+        }
+
+        if (cameraAttached) {
+            // Optionally adjust camera position/rotation within the cup here if needed
+            // Example: slightly offset the camera to look over the edge
+            cameraRef.current.position.set(subPlatformPositions[0].x, subPlatformPositions[0].y + 3, subPlatformPositions[0].z);
+            cameraRef.current.lookAt(subPlatformPositions[1]);  // Make camera look slightly forward
+
+        }
+
+    update(delta) // Update tweening
     }
+
+
 
 
 
@@ -77,6 +181,14 @@ function TeaCupRide() {
     // @ts-ignore
     return (
         <>
+            <PerspectiveCamera
+                ref={cameraRef}
+                makeDefault
+                fov={75}
+                near={0.1}
+                far={1000}
+                position={[subPlatformPositions[0].x, subPlatformPositions[0].y + 3, subPlatformPositions[0].z]}
+            />
             <Html>
                 <TeacupControlUnit />
             </Html>

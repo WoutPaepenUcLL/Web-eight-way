@@ -1,0 +1,101 @@
+[
+  {
+    "name": "main_platform_animation1",
+    "time": 0,
+    "rotationY": 0,
+    "rotationX": 0,
+    "rotationZ": 0
+  },
+  {
+    "name": "main_platform_animation2",
+    "time": 5,
+    "rotationY": 1,
+    "rotationX": 0.2,
+    "rotationZ": 0.1
+  },
+  {
+    "name": "main_platform_animation3",
+    "time": 10,
+    "rotationY": -1,
+    "rotationX": -0.2,
+    "rotationZ": 0
+  },
+  {
+    "name": "main_platform_animation4",
+    "time": 15,
+    "rotationY": 2,
+    "rotationX": -0.4,
+    "rotationZ": 0.2
+  },
+  {
+    "name": "main_platform_animation5",
+    "time": 20,
+    "rotationY": 0,
+    "rotationX": 0,
+    "rotationZ": 0
+  },
+  {
+    "name": "main_platform_animation6",
+    "time": 25,
+    "rotationY": 1,
+    "rotationX": 0.2,
+    "rotationZ": 0.1
+  },
+  {
+    "name": "main_platform_animation7",
+    "time": 30,
+    "rotationY": -1,
+    "rotationX": -0.2,
+    "rotationZ": 0
+  },
+  {
+    "name": "main_platform_animation8",
+    "time": 35,
+    "rotationY": 2,
+    "rotationX": -0.4,
+    "rotationZ": 0.2
+  },
+  {
+    "name": "main_platform_animation9",
+    "time": 40,
+    "rotationY": 0,
+    "rotationX": 0,
+    "rotationZ": 0
+  },
+  {
+    "name": "main_platform_animation10",
+    "time": 45,
+    "rotationY": 1,
+    "rotationX": 0.2,
+    "rotationZ": 0.1
+  },
+  {
+    "name": "main_platform_animation11",
+    "time": 50,
+    "rotationY": -1,
+    "rotationX": -0.2,
+    "rotationZ": 0
+  },
+  {
+    "name": "main_platform_animation12",
+    "time": 55,
+    "rotationY": 2,
+    "rotationX": -0.4,
+    "rotationZ": 0.2
+  },
+  {
+    "name": "main_platform_animation13",
+    "time": 60,
+    "rotationY": 0,
+    "rotationX": 0,
+    "rotationZ": 0
+  },
+  {
+    "name": "placeholer",
+    "time": 65,
+    "rotationY": 0,
+    "rotationX": 0,
+    "rotationZ": 0
+  }
+
+]
