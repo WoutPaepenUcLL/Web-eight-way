@@ -9,42 +9,42 @@
   {
     "name": "main_platform_animation2",
     "time": 5,
-    "rotationY": 1,
+    "rotationY": 0,
     "rotationX": 0.2,
     "rotationZ": 0.1
   },
   {
     "name": "main_platform_animation3",
     "time": 10,
-    "rotationY": -1,
+    "rotationY": -0.2,
     "rotationX": -0.2,
     "rotationZ": 0
   },
   {
     "name": "main_platform_animation4",
     "time": 15,
-    "rotationY": 2,
+    "rotationY": 0,
     "rotationX": -0.4,
     "rotationZ": 0.2
   },
   {
     "name": "main_platform_animation5",
     "time": 20,
-    "rotationY": 0,
+    "rotationY": -0.4,
     "rotationX": 0,
     "rotationZ": 0
   },
   {
     "name": "main_platform_animation6",
     "time": 25,
-    "rotationY": 1,
+    "rotationY": -1,
     "rotationX": 0.2,
     "rotationZ": 0.1
   },
   {
     "name": "main_platform_animation7",
     "time": 30,
-    "rotationY": -1,
+    "rotationY": -1.4,
     "rotationX": -0.2,
     "rotationZ": 0
   },

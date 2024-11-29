@@ -43,7 +43,7 @@ function TeaCupRide() {
     const [mainPlatformAnimation, setMainPlatformAnimation] = useState<PlatformAnimation[]>([]);
     const [currentAnimation, setCurrentAnimation] = useState<PlatformAnimation | null>(null);
 
-
+    const cameraOffset = new THREE.Vector3(0, 3, 5);
     const subPlatformPositions = calculateSubPlatformPositions();
 
     useEffect(() => {
@@ -148,11 +148,19 @@ function TeaCupRide() {
             });
         }
 
-        if (cameraAttached) {
-            // Optionally adjust camera position/rotation within the cup here if needed
-            // Example: slightly offset the camera to look over the edge
-            cameraRef.current.position.set(subPlatformPositions[0].x, subPlatformPositions[0].y + 3, subPlatformPositions[0].z);
-            cameraRef.current.lookAt(subPlatformPositions[1]);  // Make camera look slightly forward
+        if (subPlatformRefs.current[1] && cameraRef.current) {
+            const subPlatformPosition = new THREE.Vector3();
+            subPlatformRefs.current[1].getWorldPosition(subPlatformPosition); // Get world position and rotation
+
+            // Move camera to a position offset from the subplatform and set rotation
+
+           // const cameraRotation = new THREE.Euler(0, 0, 0);
+            cameraRef.current.setRotationFromEuler(subPlatformRefs.current[1].rotation);
+            const cameraPosition = subPlatformPosition.clone().add(cameraOffset);
+            cameraRef.current.position.copy(cameraPosition);
+
+            // Make camera look at the subplatform's center:
+            //cameraRef.current.lookAt(subPlatformPosition);
 
         }
 
@@ -181,14 +189,6 @@ function TeaCupRide() {
     // @ts-ignore
     return (
         <>
-            <PerspectiveCamera
-                ref={cameraRef}
-                makeDefault
-                fov={75}
-                near={0.1}
-                far={1000}
-                position={[subPlatformPositions[0].x, subPlatformPositions[0].y + 3, subPlatformPositions[0].z]}
-            />
             <Html>
                 <TeacupControlUnit />
             </Html>
@@ -219,6 +219,15 @@ function TeaCupRide() {
                             handleColor: `hsl(${index? index * 90 + 30:30}, 70%, 50%)`
                         }}
                     />
+                    {index === 0 && (
+                        <PerspectiveCamera
+
+                            makeDefault
+                            fov={75}
+                            near={0.1}
+                            far={1000}
+                            position={[subPlatformPositions[0].x-9, subPlatformPositions[0].y+5 , subPlatformPositions[0].z]}
+                        />)}
                 </group>
             ))}
         </group></>
