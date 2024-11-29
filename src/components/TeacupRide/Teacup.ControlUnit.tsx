@@ -1,5 +1,6 @@
-import React from 'react';
 import useRideStore from './RideStore';
+
+
 
 
 function TeacupControlUnit() {
@@ -43,7 +44,7 @@ function TeacupControlUnit() {
 
             <p>
                 Gates: {gatesOpen ? 'Open' : 'Closed'}
-                <br />
+                <br/>
                 Restraints: {restraintsOpen ? 'Open' : 'Closed'}
             </p>
             {isActive && remainingTime !== null && (

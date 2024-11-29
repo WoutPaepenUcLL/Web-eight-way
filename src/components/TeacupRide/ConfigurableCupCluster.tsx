@@ -1,4 +1,3 @@
-import React from 'react';
 import CupBody from "./CupBody.tsx";
 
 

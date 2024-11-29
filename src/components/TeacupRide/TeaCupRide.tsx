@@ -1,9 +1,7 @@
-import {useRef, useState} from 'react';
+import {useRef, } from 'react';
 import {useFrame} from "@react-three/fiber";
 import Teacups from "./Teacups.tsx";
 import * as THREE from "three";
-import RideMechanics from "./Classes/RideMechanics.ts";
-import ConfigurableCupCluster from "./ConfigurableCupCluster.tsx";
 import {Html} from "@react-three/drei";
 import TeacupControlUnit from "./Teacup.ControlUnit.tsx";
 import useRideStore from "./RideStore.ts";
@@ -13,23 +11,14 @@ function TeaCupRide() {
         isActive,
         runningTime,
         intensity,
-        startRide,
         stopRide,
-        openGates,
-        closeGates,
-        openRestraints,
-        closeRestraints,
-        gatesOpen,
-        restraintsOpen,
-        updateMainPlatformRotation,
-        updateSubPlatformRotation,
         updateIntensity,
         calculateSubPlatformPositions,
         rideConfig
     } = useRideStore();
 
-    const mainPlatformRef = useRef();
-    const subPlatformRefs = useRef([]);
+    const mainPlatformRef = useRef<THREE.Group>(null);
+    const subPlatformRefs = useRef<(THREE.Group | null)[]>([]);
 
     const subPlatformPositions = calculateSubPlatformPositions();
 
@@ -50,12 +39,14 @@ function TeaCupRide() {
 
         // Rotate main platform
         if (mainPlatformRef.current) {
+            // @ts-ignore
             mainPlatformRef.current.rotation.y += rideConfig.baseRotationSpeed;
         }
 
         // Rotate sub-platforms with variance
         subPlatformRefs.current.forEach((ref, index) => {
             if (ref) {
+                // @ts-ignore
                 ref.rotation.y += rideConfig.baseRotationSpeed * (index + 1);
             }
         });
@@ -63,7 +54,7 @@ function TeaCupRide() {
         // Update ride intensity and effects
         updateIntensity(delta);
         //Update intensity (if needed -  you might want to move this logic into another function)
-        //useRideStore.setState({ intensity: Math.sin(Date.now() * 0.001) * 0.5 + 0.5 });
+        useRideStore.setState({ intensity: Math.sin(Date.now() * intensity) * 0.5 + 0.5 });
     }
 
 
@@ -82,10 +73,12 @@ function TeaCupRide() {
 
 
 
+    // @ts-ignore
+    // @ts-ignore
     return (
         <>
             <Html>
-                <TeacupControlUnit startRide={startRide} stopRide={stopRide} openGates={openGates} closeGates={closeGates} openRestraints={openRestraints} closeRestraints={closeRestraints} getGatesStatus={gatesOpen} getRestraintsStatus={restraintsOpen}/>
+                <TeacupControlUnit />
             </Html>
         <group ref={mainPlatformRef}>
             {/* Base Platform */}
@@ -98,7 +91,7 @@ function TeaCupRide() {
             {subPlatformPositions.map((pos: { x: number;y:number; z: number; }, index:  number  | undefined) => (
                 <group
                     key={index}
-                    ref={el => subPlatformRefs.current[index] = el}
+                    ref={el => subPlatformRefs.current[index?index:8] = el}
                     position={[pos.x, pos.y, pos.z]}
                 >
                     {/* Sub-platform */}

@@ -20,7 +20,7 @@ interface RideState {
     updateMainPlatformRotation: (rotation: number) => void;
     updateSubPlatformRotation: (index: number, rotation: number) => void;
     updateIntensity: (delta: number) => void;
-    calculateSubPlatformPositions: () => void;
+    calculateSubPlatformPositions: () =>  {x: number, y: number, z: number}[];
     rideConfig: {
         mainPlatformRadius: number;
         subPlatformRadius: number;

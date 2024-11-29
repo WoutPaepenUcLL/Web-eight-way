@@ -1,7 +1,6 @@
 
 import './App.css'
-import {Canvas, useFrame} from "@react-three/fiber";
-import SpinningCube from "./components/SpinningCube.tsx";
+import {Canvas} from "@react-three/fiber";
 import TeaCupRide from "./components/TeacupRide/TeaCupRide.tsx";
 import {CameraControls, OrbitControls} from "@react-three/drei";
 

@@ -1,4 +1,3 @@
-import {dispose} from "@react-three/fiber";
 
 
 class RideMechanics {

@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import {Group, Object3DEventMap} from "three";
 
 
 class CupComponent {
@@ -43,7 +44,7 @@ class CupComponent {
     }
 
     // Apply dynamic cup behavior
-    animateCup(cupRef: React.MutableRefObject<undefined>, _delta: any) {
+    animateCup(cupRef: React.RefObject<Group<Object3DEventMap>> , _delta: any) {
         if (cupRef.current) {
             // Add rotation to the cup
         }
