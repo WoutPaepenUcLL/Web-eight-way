@@ -1,77 +1,80 @@
 import useRideStore from './RideStore';
-
-
-
+import { useState } from 'react';
+import FlatRide from './Classes/FlatRide';
 
 function TeacupControlUnit() {
     const {
-        isActive,
+        rides,
         startRide,
         stopRide,
         openGates,
         closeGates,
-        openRestraints,
-        closeRestraints,
-        gatesOpen,
-        restraintsOpen,
-        runningTime,
+        updateRideState,
     } = useRideStore();
 
-    const checkDispatch = () => {
-        if (gatesOpen || restraintsOpen) {
-            console.log('Cannot dispatch ride');
-        } else {
-            startRide();
-        }
-    }
-    const remainingTime = isActive && runningTime
-        ? Math.max(0, 60 - Math.floor((Date.now() - runningTime) / 1000))
-        : null;
-    const switchGates = () => {
-        if (isActive){
-            console.log('Cannot switch gates while ride is active');
-            return;
-        }
-        if (gatesOpen) {
-            closeGates();
-        } else {
-            openGates();
-        }
-    }
+    const [selectedRide, setSelectedRide] = useState<FlatRide | null>(null);
 
-    const switchRestraints = () => {
-        if (isActive){
-            console.log('Cannot switch restraints while ride is active');
-            return;
+    const handleRideSelection = (rideName: string) => {
+        const ride = rides.find(r => r.name === rideName) || null;
+        setSelectedRide(ride);
+    };
+
+    const handleStartRide = () => {
+        if (selectedRide) {
+            startRide(selectedRide.name);
         }
-        if (restraintsOpen) {
-            closeRestraints();
-        } else {
-            openRestraints();
-    }
-    }
+    };
+
+    const handleStopRide = () => {
+        if (selectedRide) {
+            stopRide(selectedRide.name);
+        }
+    };
+
+    const handleOpenGates = () => {
+        if (selectedRide) {
+            openGates(selectedRide.name);
+        }
+    };
+
+    const handleCloseGates = () => {
+        if (selectedRide) {
+            closeGates(selectedRide.name);
+        }
+    };
+
+    const handleUpdateRideState = () => {
+        if (selectedRide) {
+            updateRideState(selectedRide.name);
+        }
+    };
 
     return (
         <div>
-            <button onClick={checkDispatch}>Start Ride</button>
-            <button onClick={stopRide}>Stop Ride</button>
-            <button onClick={switchGates}>
-                {gatesOpen ? 'Close Gates' : 'Open Gates'}
-            </button>
-            <button
-                className={`bg-${restraintsOpen ? 'green' : 'red'}`}
-                onClick={switchRestraints}
-            >
-                {restraintsOpen ? 'Close Restraints' : 'Open Restraints'}
-            </button>
+            <select onChange={(e) => handleRideSelection(e.target.value)}>
+                <option value="">Select a ride</option>
+                {rides.map((ride) => (
+                    <option key={ride.name} value={ride.name}>
+                        {ride.name}
+                    </option>
+                ))}
+            </select>
 
-            <p>
-                Gates: {gatesOpen ? 'Open' : 'Closed'}
-                <br/>
-                Restraints: {restraintsOpen ? 'Open' : 'Closed'}
-            </p>
-            {isActive && remainingTime !== null && (
-                <p>Time remaining: {remainingTime} seconds</p>
+            <button onClick={handleStartRide} disabled={!selectedRide}>Start Ride</button>
+            <button onClick={handleStopRide} disabled={!selectedRide}>Stop Ride</button>
+            <button onClick={handleOpenGates} disabled={!selectedRide}>Open Gates</button>
+            <button onClick={handleCloseGates} disabled={!selectedRide}>Close Gates</button>
+            <button onClick={handleUpdateRideState} disabled={!selectedRide}>Update Ride State</button>
+
+            {selectedRide && (
+                <div>
+                    <p>Ride: {selectedRide.name}</p>
+                    <p>Seats: {selectedRide.seats}</p>
+                    <p>Grouped Seats: {selectedRide.groupedSeats}</p>
+                    <p>Duration: {selectedRide.duration} seconds</p>
+                    <p>Gates: {selectedRide.gates ? 'Open' : 'Closed'}</p>
+                    <p>Running: {selectedRide.isRunning ? 'Yes' : 'No'}</p>
+                </div>
             )}
         </div>
     );
