@@ -1,6 +1,6 @@
+import FlatRide from './FlatRide';
 
-
-class RideMechanics {
+class RideMechanics extends FlatRide {
     public config: {
         subPlatformVariance: number;
         cupCount: number;
@@ -12,6 +12,19 @@ class RideMechanics {
     private state: { intensity: number; specialEffects: any[]; isActive: boolean, restraintsOpen: boolean, gatesOpen: boolean};
 
     constructor(config = {}) {
+        super(
+            4, // seats
+            1, // groupedSeats
+            'Teacup Ride', // name
+            60, // duration
+            false, // gates
+            false, // isOpen
+            false, // isRunning
+            [], // queue
+            {}, // operatorControl
+            [] // objects
+        );
+
         // Base configuration for ride mechanics
         this.config = {
             mainPlatformRadius: 20,
